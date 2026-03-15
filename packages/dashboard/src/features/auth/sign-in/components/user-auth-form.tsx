@@ -5,9 +5,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { Loader2, LogIn } from 'lucide-react'
 import { toast } from 'sonner'
-import { IconFacebook, IconGithub } from '@/assets/brand-icons'
+import { IconGithub } from '@/assets/brand-icons'
 import { useAuthStore } from '@/stores/auth-store'
-import { sleep, cn } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -19,6 +19,10 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
+import { apiFetch } from '@/lib/api-client'
+
+const API_BASE =
+  import.meta.env.VITE_API_URL || 'http://localhost:3100/api/v1'
 
 const formSchema = z.object({
   email: z.email({
@@ -51,34 +55,35 @@ export function UserAuthForm({
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
+    try {
+      const result = await apiFetch<{
+        user: { id: string; email: string }
+        token: string
+      }>('/auth/sign-in/email', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      })
+      auth.setUser({
+        accountNo: result.user.id,
+        email: result.user.email,
+        role: ['user'],
+        exp: Date.now() + 24 * 60 * 60 * 1000,
+      })
+      auth.setAccessToken(result.token)
+      const targetPath = redirectTo || '/'
+      navigate({ to: targetPath, replace: true })
+      toast.success(`Welcome back, ${result.user.email}!`)
+    } catch {
+      toast.error('Invalid credentials')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
-    toast.promise(sleep(2000), {
-      loading: 'Signing in...',
-      success: () => {
-        setIsLoading(false)
-
-        // Mock successful authentication with expiry computed at success time
-        const mockUser = {
-          accountNo: 'ACC001',
-          email: data.email,
-          role: ['user'],
-          exp: Date.now() + 24 * 60 * 60 * 1000, // 24 hours from now
-        }
-
-        // Set user and access token
-        auth.setUser(mockUser)
-        auth.setAccessToken('mock-access-token')
-
-        // Redirect to the stored location or default to dashboard
-        const targetPath = redirectTo || '/'
-        navigate({ to: targetPath, replace: true })
-
-        return `Welcome back, ${data.email}!`
-      },
-      error: 'Error',
-    })
+  function handleGitHubLogin() {
+    window.location.href = `${API_BASE.replace('/api/v1', '')}/api/auth/sign-in/social?provider=github&callbackURL=${encodeURIComponent(window.location.origin)}`
   }
 
   return (
@@ -136,14 +141,15 @@ export function UserAuthForm({
           </div>
         </div>
 
-        <div className='grid grid-cols-2 gap-2'>
-          <Button variant='outline' type='button' disabled={isLoading}>
-            <IconGithub className='h-4 w-4' /> GitHub
-          </Button>
-          <Button variant='outline' type='button' disabled={isLoading}>
-            <IconFacebook className='h-4 w-4' /> Facebook
-          </Button>
-        </div>
+        <Button
+          variant='outline'
+          type='button'
+          disabled={isLoading}
+          onClick={handleGitHubLogin}
+          className='w-full'
+        >
+          <IconGithub className='h-4 w-4' /> Continue with GitHub
+        </Button>
       </form>
     </Form>
   )

@@ -1,61 +1,49 @@
 import {
-  Construction,
   LayoutDashboard,
-  Monitor,
-  Bug,
+  Bot,
   ListTodo,
-  FileX,
-  HelpCircle,
-  Lock,
-  Bell,
-  Package,
-  Palette,
-  ServerOff,
-  Settings,
-  Wrench,
-  UserCog,
-  UserX,
-  Users,
-  MessagesSquare,
+  GitBranch,
+  Target,
   ShieldCheck,
-  AudioWaveform,
+  CreditCard,
+  Inbox,
+  Settings,
+  UserCog,
+  KeyRound,
+  Users,
+  Palette,
+  Bell,
+  Monitor,
   Command,
-  GalleryVerticalEnd,
 } from 'lucide-react'
-import { ClerkLogo } from '@/assets/clerk-logo'
 import { type SidebarData } from '../types'
 
 export const sidebarData: SidebarData = {
   user: {
-    name: 'satnaing',
-    email: 'satnaingdev@gmail.com',
+    name: 'User',
+    email: 'user@codeforce.dev',
     avatar: '/avatars/shadcn.jpg',
   },
   teams: [
     {
-      name: 'Shadcn Admin',
+      name: 'Codeforce',
       logo: Command,
-      plan: 'Vite + ShadcnUI',
-    },
-    {
-      name: 'Acme Inc',
-      logo: GalleryVerticalEnd,
-      plan: 'Enterprise',
-    },
-    {
-      name: 'Acme Corp.',
-      logo: AudioWaveform,
-      plan: 'Startup',
+      plan: 'AI Engineering Platform',
     },
   ],
   navGroups: [
     {
-      title: 'General',
+      title: 'Platform',
       items: [
         {
-          title: 'Dashboard',
+          title: 'Overview',
           url: '/',
           icon: LayoutDashboard,
+        },
+        {
+          title: 'Agents',
+          url: '/agents',
+          icon: Bot,
         },
         {
           title: 'Tasks',
@@ -63,105 +51,34 @@ export const sidebarData: SidebarData = {
           icon: ListTodo,
         },
         {
-          title: 'Apps',
-          url: '/apps',
-          icon: Package,
+          title: 'Pipelines',
+          url: '/pipelines',
+          icon: GitBranch,
         },
         {
-          title: 'Chats',
-          url: '/chats',
-          badge: '3',
-          icon: MessagesSquare,
+          title: 'Goals',
+          url: '/goals',
+          icon: Target,
         },
         {
-          title: 'Users',
-          url: '/users',
-          icon: Users,
-        },
-        {
-          title: 'Secured by Clerk',
-          icon: ClerkLogo,
-          items: [
-            {
-              title: 'Sign In',
-              url: '/clerk/sign-in',
-            },
-            {
-              title: 'Sign Up',
-              url: '/clerk/sign-up',
-            },
-            {
-              title: 'User Management',
-              url: '/clerk/user-management',
-            },
-          ],
-        },
-      ],
-    },
-    {
-      title: 'Pages',
-      items: [
-        {
-          title: 'Auth',
+          title: 'Approvals',
+          url: '/approvals',
           icon: ShieldCheck,
-          items: [
-            {
-              title: 'Sign In',
-              url: '/sign-in',
-            },
-            {
-              title: 'Sign In (2 Col)',
-              url: '/sign-in-2',
-            },
-            {
-              title: 'Sign Up',
-              url: '/sign-up',
-            },
-            {
-              title: 'Forgot Password',
-              url: '/forgot-password',
-            },
-            {
-              title: 'OTP',
-              url: '/otp',
-            },
-          ],
         },
         {
-          title: 'Errors',
-          icon: Bug,
-          items: [
-            {
-              title: 'Unauthorized',
-              url: '/errors/unauthorized',
-              icon: Lock,
-            },
-            {
-              title: 'Forbidden',
-              url: '/errors/forbidden',
-              icon: UserX,
-            },
-            {
-              title: 'Not Found',
-              url: '/errors/not-found',
-              icon: FileX,
-            },
-            {
-              title: 'Internal Server Error',
-              url: '/errors/internal-server-error',
-              icon: ServerOff,
-            },
-            {
-              title: 'Maintenance Error',
-              url: '/errors/maintenance-error',
-              icon: Construction,
-            },
-          ],
+          title: 'Billing',
+          url: '/billing',
+          icon: CreditCard,
+        },
+        {
+          title: 'Inbox',
+          url: '/inbox',
+          icon: Inbox,
         },
       ],
     },
     {
-      title: 'Other',
+      title: 'Organization',
       items: [
         {
           title: 'Settings',
@@ -173,9 +90,14 @@ export const sidebarData: SidebarData = {
               icon: UserCog,
             },
             {
-              title: 'Account',
-              url: '/settings/account',
-              icon: Wrench,
+              title: 'Team Members',
+              url: '/settings/team',
+              icon: Users,
+            },
+            {
+              title: 'Credentials',
+              url: '/settings/credentials',
+              icon: KeyRound,
             },
             {
               title: 'Appearance',
@@ -193,11 +115,6 @@ export const sidebarData: SidebarData = {
               icon: Monitor,
             },
           ],
-        },
-        {
-          title: 'Help Center',
-          url: '/help-center',
-          icon: HelpCircle,
         },
       ],
     },
