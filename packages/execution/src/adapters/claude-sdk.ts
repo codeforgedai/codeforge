@@ -12,6 +12,19 @@ export interface ClaudeSdkResult {
   output: string;
   toolResults: any[];
   messages: any[];
+  tokensIn: number;
+  tokensOut: number;
+}
+
+export function extractTokenUsage(messages: any[]): { tokensIn: number; tokensOut: number } {
+  let tokensIn = 0;
+  let tokensOut = 0;
+  for (const m of messages) {
+    if (!m.usage) continue;
+    tokensIn += m.usage.input_tokens ?? 0;
+    tokensOut += m.usage.output_tokens ?? 0;
+  }
+  return { tokensIn, tokensOut };
 }
 
 export async function executeClaudeSdk(
@@ -42,6 +55,7 @@ export async function executeClaudeSdk(
   );
 
   const output = resultMessage?.result ?? '';
+  const { tokensIn, tokensOut } = extractTokenUsage(collectedMessages);
 
-  return { output, toolResults, messages: collectedMessages };
+  return { output, toolResults, messages: collectedMessages, tokensIn, tokensOut };
 }
