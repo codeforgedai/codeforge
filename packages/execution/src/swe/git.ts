@@ -116,8 +116,10 @@ export async function createGitHubPr(params: PrParams): Promise<PrResult> {
     body: JSON.stringify({ title, body, head, base }),
   });
 
+  const data = await response.json();
+
   if (response.ok) {
-    return response.json() as Promise<PrResult>;
+    return data as PrResult;
   }
 
   if (response.status === 422) {
@@ -132,8 +134,7 @@ export async function createGitHubPr(params: PrParams): Promise<PrResult> {
     if (prs.length > 0) return prs[0];
   }
 
-  const error = await response.json();
-  throw new Error(`GitHub API error: ${(error as { message: string }).message}`);
+  throw new Error(`GitHub API error: ${(data as { message: string }).message}`);
 }
 
 export async function getDefaultBranch(
