@@ -1,0 +1,20 @@
+{
+  "name": "@codeforce/cli",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "bin": { "codeforce": "dist/index.js" },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "commander": "^12.0.0",
+    "@codeforce/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
+}

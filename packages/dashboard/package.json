@@ -1,0 +1,6 @@
+{
+  "name": "@codeforce/dashboard",
+  "version": "0.0.1",
+  "private": true,
+  "note": "Cloned from shadcn-admin in Task 21 — this placeholder ensures pnpm workspace recognizes it"
+}
