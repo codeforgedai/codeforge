@@ -42,15 +42,18 @@ export async function safetyNetPr(params: SafetyNetPrParams): Promise<string | n
 
   const baseBranch = await getDefaultBranch(repoOwner, repoName, githubToken);
 
-  const pr = await createGitHubPr({
-    owner: repoOwner,
-    repo: repoName,
-    title: `[codeforce] ${taskId}`,
-    body: 'Auto-generated draft PR from codeforce safety net.',
-    head: expectedBranch,
-    base: baseBranch,
-    token: githubToken,
-  });
-
-  return pr?.html_url ?? null;
+  try {
+    const pr = await createGitHubPr({
+      owner: repoOwner,
+      repo: repoName,
+      title: `[codeforge] ${taskId}`,
+      body: 'Auto-generated draft PR from codeforge safety net.',
+      head: expectedBranch,
+      base: baseBranch,
+      token: githubToken,
+    });
+    return pr.html_url;
+  } catch {
+    return null;
+  }
 }

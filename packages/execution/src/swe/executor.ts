@@ -93,13 +93,15 @@ export async function executeSwe(config: SweExecutionConfig): Promise<SweExecuti
       costCents: 0,
     };
   } catch (error) {
-    await safetyNetPr({
-      cwd: cwd!,
-      taskId,
-      repoOwner: workspace.repoOwner,
-      repoName: workspace.repoName,
-      githubToken,
-    }).catch(() => {});
+    if (cwd!) {
+      await safetyNetPr({
+        cwd,
+        taskId,
+        repoOwner: workspace.repoOwner,
+        repoName: workspace.repoName,
+        githubToken,
+      }).catch(() => {});
+    }
 
     throw error;
   }

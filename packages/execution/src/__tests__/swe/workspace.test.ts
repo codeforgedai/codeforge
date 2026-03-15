@@ -28,9 +28,14 @@ vi.mock('node:fs/promises', () => ({
   unlink: mockUnlink,
   readFile: mockReadFile,
 }));
+const { mockValidateBranchName } = vi.hoisted(() => ({
+  mockValidateBranchName: vi.fn(),
+}));
+
 vi.mock('../../swe/git.js', () => ({
   checkoutBranch: mockCheckoutBranch,
   getDefaultBranch: mockGetDefaultBranch,
+  validateBranchName: mockValidateBranchName,
 }));
 
 import { setupWorkspace, readRepoRules, WORKSPACES_ROOT } from '../../swe/workspace.js';
@@ -45,6 +50,7 @@ beforeEach(() => {
   mockReadFile.mockReset();
   mockCheckoutBranch.mockReset();
   mockGetDefaultBranch.mockReset();
+  mockValidateBranchName.mockReset();
 
   mockMkdir.mockResolvedValue(undefined);
   mockWriteFile.mockResolvedValue(undefined);
@@ -96,6 +102,11 @@ describe('setupWorkspace', () => {
   const taskId = 'task-123';
   const token = 'ghp_test';
   const expectedDir = join(WORKSPACES_ROOT, 'my-repo');
+
+  it('rejects invalid repo URL', async () => {
+    const badConfig = { ...config, repoUrl: 'https://evil.com/repo.git' };
+    await expect(setupWorkspace(badConfig, taskId, token)).rejects.toThrow('Invalid repo URL');
+  });
 
   it('clones repo if workspace dir does not exist', async () => {
     mockStat.mockRejectedValue(new Error('ENOENT'));

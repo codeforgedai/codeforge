@@ -3,7 +3,9 @@ import { promisify } from 'node:util';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { mkdir, rm, stat, writeFile, unlink, readFile } from 'node:fs/promises';
-import { checkoutBranch, getDefaultBranch } from './git.js';
+import { checkoutBranch, getDefaultBranch, validateBranchName } from './git.js';
+
+const VALID_REPO_URL = /^https:\/\/github\.com\/[\w\-./]+\.git$/;
 
 const exec = promisify(cpExec);
 
@@ -75,11 +77,16 @@ export async function setupWorkspace(
   taskId: string,
   token: string,
 ): Promise<string> {
+  if (!VALID_REPO_URL.test(config.repoUrl)) {
+    throw new Error(`Invalid repo URL: ${config.repoUrl}`);
+  }
+
   await mkdir(WORKSPACES_ROOT, { recursive: true });
 
   const workspaceDir = join(WORKSPACES_ROOT, config.repoName);
 
   const baseBranch = config.baseBranch ?? await getDefaultBranch(config.repoOwner, config.repoName, token);
+  validateBranchName(baseBranch);
 
   if (await dirExists(workspaceDir)) {
     if (await isGitRepo(workspaceDir)) {
