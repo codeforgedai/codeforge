@@ -16,7 +16,7 @@
 
 **If Claude Agent SDK is an _employee_, Codeforge is the _company_.**
 
-Codeforge is a Node.js server and React dashboard that orchestrates a team of AI agents to ship software. Bring your own agents, define an org chart, assign goals, and track your agents' work and costs from one dashboard.
+Codeforge orchestrates a team of AI agents to ship software. Bring your own agents, define an org chart, assign goals, and track your agents' work and costs from one dashboard.
 
 It looks like a project manager — but under the hood it has org charts, budgets, governance, goal alignment, and agent coordination.
 
