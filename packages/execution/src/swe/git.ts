@@ -1,4 +1,5 @@
 import { exec as cpExec } from 'node:child_process';
+import { randomBytes } from 'node:crypto';
 import { promisify } from 'node:util';
 import { writeFile, unlink } from 'node:fs/promises';
 
@@ -44,29 +45,29 @@ export async function commitAll(cwd: string, message: string): Promise<void> {
   await exec(`git commit -m '${escapeForShell(message)}'`, { cwd });
 }
 
-export interface DiffStat {
-  file: string;
-  additions: number;
-  deletions: number;
-}
-
-export async function getDiffStats(cwd: string): Promise<DiffStat[]> {
-  const { stdout } = await exec('git diff HEAD~1 --numstat', { cwd });
-  if (!stdout.trim()) return [];
-
-  return stdout
-    .trim()
-    .split('\n')
-    .map((line) => {
-      const [add, del, file] = line.split('\t');
-      return { file, additions: parseInt(add, 10), deletions: parseInt(del, 10) };
-    });
+export async function getDiffStats(cwd: string): Promise<{ additions: number; deletions: number }> {
+  const { stdout } = await exec('git diff HEAD~1 --numstat 2>/dev/null || echo ""', { cwd });
+  let additions = 0;
+  let deletions = 0;
+  for (const line of stdout.trim().split('\n')) {
+    if (!line) continue;
+    const [add, del] = line.split('\t');
+    const a = parseInt(add, 10);
+    const d = parseInt(del, 10);
+    if (!isNaN(a)) additions += a;
+    if (!isNaN(d)) deletions += d;
+  }
+  return { additions, deletions };
 }
 
 export async function getChangedFiles(cwd: string): Promise<string[]> {
-  const { stdout } = await exec('git diff HEAD~1 --name-only', { cwd });
-  if (!stdout.trim()) return [];
-  return stdout.trim().split('\n');
+  try {
+    const { stdout } = await exec('git diff HEAD~1 --name-only', { cwd });
+    if (!stdout.trim()) return [];
+    return stdout.trim().split('\n');
+  } catch {
+    return [];
+  }
 }
 
 export async function configUser(cwd: string, name: string, email: string): Promise<void> {
@@ -75,7 +76,8 @@ export async function configUser(cwd: string, name: string, email: string): Prom
 }
 
 export async function push(cwd: string, branch: string, token: string): Promise<void> {
-  const credFile = `/tmp/.git-credentials-${Date.now()}`;
+  validateBranchName(branch);
+  const credFile = `/tmp/.git-credentials-${randomBytes(8).toString('hex')}`;
   try {
     await writeFile(credFile, `https://x-access-token:${token}@github.com\n`, { mode: 0o600 });
     await exec(
@@ -95,6 +97,7 @@ export interface PrParams {
   head: string;
   base: string;
   token: string;
+  draft?: boolean;
 }
 
 export interface PrResult {
@@ -103,7 +106,7 @@ export interface PrResult {
 }
 
 export async function createGitHubPr(params: PrParams): Promise<PrResult> {
-  const { owner, repo, title, body, head, base, token } = params;
+  const { owner, repo, title, body, head, base, token, draft = true } = params;
   const url = `https://api.github.com/repos/${owner}/${repo}/pulls`;
 
   const response = await fetch(url, {
@@ -113,7 +116,7 @@ export async function createGitHubPr(params: PrParams): Promise<PrResult> {
       Accept: 'application/vnd.github.v3+json',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ title, body, head, base }),
+    body: JSON.stringify({ title, body, head, base, draft }),
   });
 
   const data = await response.json();

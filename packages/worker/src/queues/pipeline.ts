@@ -24,15 +24,17 @@ export function createPipelineProcessor(db: any) {
     const stepGraph = config.serializedStepGraph as any;
     const steps = Array.isArray(stepGraph?.steps) ? stepGraph.steps : [];
 
+    const stepsWithRuntime = steps.map((s: any) => ({
+      stepType: s.stepType ?? 'code',
+      agentId: s.agentId ?? 'unknown',
+      config: { ...s.config, taskId },
+    }));
+
     const workflow = buildWorkflow({
       name: config.name,
       orgId,
       projectId: 'default',
-      steps: steps.map((s: any) => ({
-        stepType: s.stepType ?? 'code',
-        agentId: s.agentId ?? 'unknown',
-        config: s.config ?? {},
-      })),
+      steps: stepsWithRuntime,
     });
 
     const [run] = await db.insert(pipelineRuns).values({

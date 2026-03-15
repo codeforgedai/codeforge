@@ -92,8 +92,8 @@ describe('hasUnpushedCommits', () => {
     expect(result).toBe(false);
   });
 
-  it('returns false when command fails (no upstream)', async () => {
-    mockExec.mockResolvedValue({ stdout: '' });
+  it('returns false when shell fallback echoes empty (no upstream)', async () => {
+    mockExec.mockResolvedValue({ stdout: '\n' });
     const result = await hasUnpushedCommits('/repo');
     expect(result).toBe(false);
   });
@@ -133,21 +133,18 @@ describe('commitAll', () => {
 });
 
 describe('getDiffStats', () => {
-  it('parses numstat output', async () => {
+  it('sums additions and deletions from numstat output', async () => {
     mockExec.mockResolvedValue({
       stdout: '10\t5\tsrc/foo.ts\n3\t0\tsrc/bar.ts\n',
     });
     const stats = await getDiffStats('/repo');
-    expect(stats).toEqual([
-      { file: 'src/foo.ts', additions: 10, deletions: 5 },
-      { file: 'src/bar.ts', additions: 3, deletions: 0 },
-    ]);
+    expect(stats).toEqual({ additions: 13, deletions: 5 });
   });
 
-  it('returns empty array for no changes', async () => {
+  it('returns zeros for no changes', async () => {
     mockExec.mockResolvedValue({ stdout: '' });
     const stats = await getDiffStats('/repo');
-    expect(stats).toEqual([]);
+    expect(stats).toEqual({ additions: 0, deletions: 0 });
   });
 });
 
@@ -160,6 +157,12 @@ describe('getChangedFiles', () => {
 
   it('returns empty array for no changes', async () => {
     mockExec.mockResolvedValue({ stdout: '' });
+    const files = await getChangedFiles('/repo');
+    expect(files).toEqual([]);
+  });
+
+  it('returns empty array when git diff fails (no prior commits)', async () => {
+    mockExec.mockRejectedValue(new Error('fatal: bad revision HEAD~1'));
     const files = await getChangedFiles('/repo');
     expect(files).toEqual([]);
   });
@@ -188,9 +191,11 @@ describe('push', () => {
 
     await push('/repo', 'my-branch', 'ghp_token123');
 
-    expect(mockWriteFile).toHaveBeenCalled();
-    const writtenContent = mockWriteFile.mock.calls[0][1] as string;
-    expect(writtenContent).toContain('ghp_token123');
+    expect(mockWriteFile).toHaveBeenCalledWith(
+      expect.stringContaining('.git-credentials'),
+      expect.stringContaining('ghp_token123'),
+      { mode: 0o600 },
+    );
 
     const pushCall = mockExec.mock.calls.find((c: string[]) =>
       (c[0] as string).includes('git') && (c[0] as string).includes('push'),
@@ -200,6 +205,11 @@ describe('push', () => {
     expect(pushCall![0]).toContain('-u origin my-branch');
 
     expect(mockUnlink).toHaveBeenCalled();
+  });
+
+  it('throws on invalid branch name without writing credentials', async () => {
+    await expect(push('/repo', 'bad branch; evil', 'tok')).rejects.toThrow('Invalid branch name');
+    expect(mockWriteFile).not.toHaveBeenCalled();
   });
 });
 

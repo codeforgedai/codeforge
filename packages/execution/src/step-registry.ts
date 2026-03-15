@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { sweStepFactory } from './steps/swe.js';
 
 export interface StepFactory {
   id: string;
@@ -36,21 +37,6 @@ const architectOutputSchema = z.object({
   plan: z.string(),
   filesToChange: z.array(z.string()),
   estimatedComplexity: z.enum(['low', 'medium', 'high']),
-});
-
-const sweInputSchema = z.object({
-  plan: z.string(),
-  filesToChange: z.array(z.string()),
-  cwd: z.string().optional(),
-});
-
-const sweOutputSchema = z.object({
-  filesChanged: z.array(z.string()),
-  summary: z.string(),
-  diffStats: z.object({
-    additions: z.number(),
-    deletions: z.number(),
-  }).optional(),
 });
 
 const reviewInputSchema = z.object({
@@ -109,19 +95,7 @@ const stepFactories: Record<string, () => StepFactory> = {
     },
   }),
 
-  'swe': () => ({
-    id: 'swe',
-    description: 'Executes code changes via Claude Code SDK',
-    inputSchema: sweInputSchema,
-    outputSchema: sweOutputSchema,
-    execute: async (input, context) => {
-      return {
-        filesChanged: input.filesToChange ?? [],
-        summary: `Executed plan: ${input.plan.slice(0, 100)}`,
-        diffStats: { additions: 0, deletions: 0 },
-      };
-    },
-  }),
+  'swe': sweStepFactory,
 
   'review': () => ({
     id: 'review',
