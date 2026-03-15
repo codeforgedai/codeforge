@@ -234,11 +234,12 @@ Task: "Add GET /health endpoint"
      "Modify src/routes/index.ts, add health.ts ..."
 
   🔄 SWE Implementation               2:34    $0.14
-     ├─ Cloned repo
-     ├─ Created branch feat/task-123
-     ├─ Writing src/routes/health.ts
-     ├─ Running tests... 14/14 passed
-     └─ Creating PR...
+     ├─ Cloned repo, checked out codeforge/task-123
+     ├─ Loaded repo rules (CLAUDE.md)
+     ├─ Claude Agent SDK executing plan...
+     ├─ Completion guard: changes detected ✓
+     ├─ Pushed branch, created draft PR
+     └─ +47 -3 across 2 files
 
   ⏳ Code Review                        —      —
 
@@ -303,7 +304,7 @@ Every agent gets access to org-scoped platform tools:
 | `request_approval` | Request human approval for an action | Any agent |
 | `hire_agent` | Request creation of a new agent | CEO, CTO |
 
-SWE agents additionally get full filesystem access via the Claude Agent SDK (`Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep`).
+SWE agents get full filesystem access via the Claude Agent SDK (`Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep`). The SWE executor handles workspace setup (clone/pull with credential files), composable system prompts (with repo rules from CLAUDE.md/AGENTS.md), a completion guard (retries if no commits detected), and a safety-net PR (auto-creates a draft PR to preserve work on failure).
 
 ### @mention triggered wakeups
 
@@ -325,7 +326,7 @@ codeforge/
 ├── packages/
 │   ├── shared/        ← Types, validators, constants, YAML config parser
 │   ├── db/            ← Drizzle schema (39+ tables), PGlite/Postgres connection
-│   ├── execution/     ← Platform tools, agent bridge, workflow builder, adapters
+│   ├── execution/     ← Platform tools, agent bridge, workflow builder, SWE executor
 │   ├── server/        ← REST API, auth, middleware, routes, realtime, heartbeat
 │   ├── worker/        ← BullMQ consumers for heartbeat and pipeline queues
 │   ├── dashboard/     ← Vite + TanStack Router + shadcn/ui
@@ -338,7 +339,7 @@ codeforge/
 |---------|------------|
 | `@codeforce/shared` | Types, constants, validators, YAML config parser with cycle detection |
 | `@codeforce/db` | Drizzle ORM schema (39+ tables), PGlite/Postgres dual-mode connection |
-| `@codeforce/execution` | Platform tools, agent bridge, step registry, workflow builder, Claude Agent SDK adapter |
+| `@codeforce/execution` | Platform tools, agent bridge, step registry, workflow builder, Claude Agent SDK adapter, SWE executor (workspace setup, completion guard, safety-net PR) |
 | `@codeforce/server` | Express API, BetterAuth, org-scoped middleware, CRUD routes, SSE/WebSocket realtime, heartbeat scheduler, encrypted secrets |
 | `@codeforce/worker` | BullMQ processors for heartbeat and pipeline queues with budget enforcement |
 | `@codeforce/dashboard` | Management dashboard — agents, tasks, pipelines, goals, approvals, billing, inbox, settings |
@@ -485,7 +486,7 @@ Dev mode runs server + worker in one process with PGlite and EventEmitter-based 
 pnpm dev              # Full dev (API + dashboard, watch mode)
 pnpm build            # Build all packages
 pnpm typecheck        # Type checking across all packages
-pnpm test             # Run all tests (176 tests)
+pnpm test             # Run all tests (242 tests)
 pnpm db:generate      # Generate Drizzle migrations
 pnpm db:migrate       # Apply migrations
 ```
