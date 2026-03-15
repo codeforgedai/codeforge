@@ -1,6 +1,7 @@
 import type { Job } from 'bullmq';
 import { eq } from 'drizzle-orm';
 import { agents, agentRuntimeState, heartbeatRuns } from '@codeforce/db';
+import { buildPlatformTools } from '@codeforce/execution';
 import { checkBudget, recordCostEvent, logActivity, type ExecutionContext } from '../executor.js';
 
 export interface HeartbeatJobData {
@@ -47,7 +48,7 @@ export function createHeartbeatProcessor(db: any) {
         name: agent.name,
         model: agent.model,
         instructions: agent.instructions ?? '',
-        tools: [],
+        tools: buildPlatformTools({ db, orgId }),
         prompt: 'Heartbeat check: review current state and take any needed actions.',
       });
 
