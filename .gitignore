@@ -2,5 +2,30 @@ node_modules/
 dist/
 .env
 *.local
+*.tsbuildinfo
 .DS_Store
 .pglite/
+.vite/
+coverage/
+data/
+.pnpm-store/
+tmp-*
+tmp/
+
+# Build artifacts in src directories
+**/src/**/*.js
+**/src/**/*.js.map
+**/src/**/*.d.ts
+**/src/**/*.d.ts.map
+
+# Editor / tool temp files
+*.tmp
+.vscode/
+.claude/settings.local.json
+
+# Drizzle migration meta
+drizzle/meta/
+
+# Test results
+tests/e2e/test-results/
+tests/e2e/playwright-report/

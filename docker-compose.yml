@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: codeforge
+      POSTGRES_PASSWORD: codeforge
+      POSTGRES_DB: codeforge
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U codeforge -d codeforge"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  server:
+    build: .
+    ports:
+      - "3100:3100"
+    environment:
+      DATABASE_URL: postgres://codeforge:codeforge@db:5432/codeforge
+      REDIS_URL: redis://redis:6379
+      PORT: "3100"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+volumes:
+  pgdata:
