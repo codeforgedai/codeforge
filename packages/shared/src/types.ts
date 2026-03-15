@@ -15,7 +15,7 @@ export interface HeartbeatPolicy {
 }
 
 export type ContextMode = 'thin' | 'fat';
-export type AdapterType = 'claude-code-sdk' | 'http' | 'process';
+export type AdapterType = 'claude-agent-sdk' | 'http' | 'process';
 export type PrincipalType = 'user' | 'agent';
 export type MembershipRole = 'owner' | 'admin' | 'member' | 'viewer';
 export type ApprovalType = 'hire_agent' | 'budget_change' | 'deploy' | 'custom';

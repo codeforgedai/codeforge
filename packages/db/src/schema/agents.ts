@@ -10,7 +10,7 @@ export const agents = pgTable('agents', {
   role: text('role').notNull(),
   status: text('status').notNull().default('pending_approval'),
   reportsTo: text('reports_to'),
-  adapterType: text('adapter_type').notNull().default('claude-code-sdk'),
+  adapterType: text('adapter_type').notNull().default('claude-agent-sdk'),
   adapterConfig: jsonb('adapter_config').default({}),
   runtimeConfig: jsonb('runtime_config').default({}),
   instructions: text('instructions'),

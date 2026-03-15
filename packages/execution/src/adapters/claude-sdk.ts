@@ -1,13 +1,11 @@
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
-
-const execFileAsync = promisify(execFile);
+import { query } from '@anthropic-ai/claude-agent-sdk';
 
 export interface ClaudeSdkConfig {
   cwd: string;
   maxTurns: number;
   allowedTools: string[];
   env?: Record<string, string>;
+  systemPrompt?: string;
 }
 
 export interface ClaudeSdkResult {
@@ -20,51 +18,30 @@ export async function executeClaudeSdk(
   prompt: string,
   config: ClaudeSdkConfig,
 ): Promise<ClaudeSdkResult> {
-  const args = [
-    '--print',
-    '--max-turns', String(config.maxTurns),
-    '--output-format', 'json',
-  ];
+  const collectedMessages: any[] = [];
 
-  for (const tool of config.allowedTools) {
-    args.push('--allowedTools', tool);
-  }
-
-  args.push(prompt);
-
-  const env = {
-    ...process.env,
-    ...config.env,
-  };
-
-  try {
-    const { stdout } = await execFileAsync('claude', args, {
+  for await (const message of query({
+    prompt,
+    options: {
+      allowedTools: config.allowedTools,
       cwd: config.cwd,
-      env,
-      maxBuffer: 10 * 1024 * 1024,
-    });
-
-    let parsed: any;
-    try {
-      parsed = JSON.parse(stdout);
-    } catch {
-      return {
-        output: stdout,
-        toolResults: [],
-        messages: [],
-      };
-    }
-
-    const output = parsed.result ?? parsed.text ?? stdout;
-    const messages = Array.isArray(parsed.messages) ? parsed.messages : [];
-    const toolResults = messages.filter((m: any) => m.type === 'tool_result' || m.role === 'tool');
-
-    return { output, toolResults, messages };
-  } catch (err) {
-    return {
-      output: `Error: ${err instanceof Error ? err.message : String(err)}`,
-      toolResults: [],
-      messages: [],
-    };
+      maxTurns: config.maxTurns,
+      systemPrompt: config.systemPrompt,
+      permissionMode: 'bypassPermissions',
+    },
+  })) {
+    collectedMessages.push(message);
   }
+
+  const resultMessage = collectedMessages.find(
+    (m) => m.type === 'result',
+  );
+
+  const toolResults = collectedMessages.filter(
+    (m) => m.type === 'tool_result',
+  );
+
+  const output = resultMessage?.result ?? '';
+
+  return { output, toolResults, messages: collectedMessages };
 }

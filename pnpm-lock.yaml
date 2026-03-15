@@ -253,9 +253,9 @@ importers:
       '@ai-sdk/anthropic':
         specifier: ^1.0.0
         version: 1.2.12(zod@3.25.76)
-      '@anthropic-ai/claude-code':
-        specifier: ^2.0.0
-        version: 2.1.76
+      '@anthropic-ai/claude-agent-sdk':
+        specifier: ^0.2.76
+        version: 0.2.76(zod@3.25.76)
       '@codeforce/db':
         specifier: workspace:*
         version: link:../db
@@ -409,10 +409,11 @@ packages:
     peerDependencies:
       zod: ^3.23.8
 
-  '@anthropic-ai/claude-code@2.1.76':
-    resolution: {integrity: sha512-T6Uyl5Jw7fWiFaBqGZ1Faexm1nVc4P92KLLGbILoX4I/q3sRQrkDqrgwt0Jw45vMyfi794OrCP+BBSM267INZA==}
+  '@anthropic-ai/claude-agent-sdk@0.2.76':
+    resolution: {integrity: sha512-HZxvnT8ZWkzCnQygaYCA0dl8RSUzuVbxE1YG4ecy6vh4nQbTT36CxUxBy+QVdR12pPQluncC0mCOLhI2918Eaw==}
     engines: {node: '>=18.0.0'}
-    hasBin: true
+    peerDependencies:
+      zod: ^4.0.0
 
   '@anush008/tokenizers-darwin-universal@0.0.0':
     resolution: {integrity: sha512-SACpWEooTjFX89dFKRVUhivMxxcZRtA3nJGVepdLyrwTkQ1TZQ8581B5JoXp0TcTMHfgnDaagifvVoBiFEdNCQ==}
@@ -6235,7 +6236,9 @@ snapshots:
       zod: 3.25.76
       zod-to-json-schema: 3.25.1(zod@3.25.76)
 
-  '@anthropic-ai/claude-code@2.1.76':
+  '@anthropic-ai/claude-agent-sdk@0.2.76(zod@3.25.76)':
+    dependencies:
+      zod: 3.25.76
     optionalDependencies:
       '@img/sharp-darwin-arm64': 0.34.5
       '@img/sharp-darwin-x64': 0.34.5

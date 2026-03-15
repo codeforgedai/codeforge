@@ -24,7 +24,7 @@ const TABLES: string[] = [
     role TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'pending_approval',
     reports_to TEXT,
-    adapter_type TEXT NOT NULL DEFAULT 'claude-code-sdk',
+    adapter_type TEXT NOT NULL DEFAULT 'claude-agent-sdk',
     adapter_config JSONB DEFAULT '{}',
     runtime_config JSONB DEFAULT '{}',
     instructions TEXT,

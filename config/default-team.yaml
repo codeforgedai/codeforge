@@ -33,7 +33,7 @@ agents:
     model: claude-sonnet-4-5
     role: swe
     reports_to: cto
-    adapter: codex
+    adapter: claude-agent-sdk
     instructions: "You are a software engineer. Implement tasks assigned to you."
     tools:
       - read_file
