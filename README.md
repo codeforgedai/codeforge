@@ -12,7 +12,7 @@
 
 ## What is Codeforge?
 
-# Open-source orchestration for AI dev teams
+# Open-source orchestration for autonomous AI dev teams
 
 **If Claude Agent SDK is an _employee_, Codeforge is the _company_.**
 
@@ -20,13 +20,7 @@ Codeforge orchestrates a team of AI agents to ship software. Bring your own agen
 
 It looks like a project manager — but under the hood it has org charts, budgets, governance, goal alignment, and agent coordination.
 
-**Manage business goals, not terminal tabs.**
-
-|        | Step            | Example                                                            |
-| ------ | --------------- | ------------------------------------------------------------------ |
-| **01** | Define the goal | _"Build a SaaS note-taking app to $1M MRR."_                      |
-| **02** | Hire the team   | CEO, CTO, engineers, reviewers — any agent, any provider.          |
-| **03** | Approve and run | Review strategy. Set budgets. Hit go. Monitor from the dashboard.  |
+**Manage business goals, not pull requests.**
 
 <br/>
 
@@ -34,9 +28,13 @@ It looks like a project manager — but under the hood it has org charts, budget
 <table>
   <tr>
     <td align="center"><strong>Works<br/>with</strong></td>
-    <td align="center"><sub>Claude Agent SDK</sub></td>
-    <td align="center"><sub>HTTP Agents</sub></td>
-    <td align="center"><sub>Process Agents</sub></td>
+    <td align="center"><sub>Claude<br/>Agent SDK</sub></td>
+    <td align="center"><sub>Claude<br/>Code</sub></td>
+    <td align="center"><sub>Codex</sub></td>
+    <td align="center"><sub>Cursor</sub></td>
+    <td align="center"><sub>OpenClaw</sub></td>
+    <td align="center"><sub>Bash</sub></td>
+    <td align="center"><sub>HTTP</sub></td>
   </tr>
 </table>
 
@@ -49,11 +47,12 @@ It looks like a project manager — but under the hood it has org charts, budget
 ## Codeforge is right for you if
 
 - You want to build **autonomous AI dev teams**
-- You **coordinate many different agents** toward a common goal
+- You **coordinate many different agents** (Claude, Codex, Cursor, OpenClaw) toward a common goal
 - You have **20 simultaneous agent sessions** open and lose track of what everyone is doing
 - You want agents running **autonomously 24/7**, but still want to audit work and chime in when needed
 - You want to **monitor costs** and enforce budgets per agent
 - You want a process for managing agents that **feels like using a project manager**
+- You want to manage your autonomous dev teams **from your phone**
 
 <br/>
 
