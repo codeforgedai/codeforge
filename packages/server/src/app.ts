@@ -8,6 +8,9 @@ import { projectsRouter } from './routes/projects.js';
 import { approvalsRouter } from './routes/approvals.js';
 import { secretsRouter } from './routes/secrets.js';
 import { billingRouter } from './routes/billing.js';
+import { pipelinesRouter } from './routes/pipelines.js';
+import { sseRouter } from './realtime/sse.js';
+import { DevRealtimeProvider } from './realtime/provider.js';
 
 export function createApp(db?: ReturnType<typeof createDb>) {
   const app = express();
@@ -26,7 +29,11 @@ export function createApp(db?: ReturnType<typeof createDb>) {
     app.use('/api/v1/approvals', approvalsRouter(db));
     app.use('/api/v1/secrets', secretsRouter(db));
     app.use('/api/v1/billing', billingRouter(db));
+    app.use('/api/v1/pipelines', pipelinesRouter(db));
   }
+
+  const realtime = new DevRealtimeProvider();
+  app.use('/api/v1/realtime', sseRouter(realtime));
 
   return app;
 }
