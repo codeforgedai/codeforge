@@ -1,0 +1,85 @@
+name: Default Team
+
+agents:
+  ceo:
+    model: claude-sonnet-4-5
+    role: ceo
+    instructions: "You are the CEO. Approve hires, set goals, review progress."
+    tools:
+      - approve_hire
+      - set_goal
+    budget_monthly_cents: 50000
+    context_mode: thin
+    permissions:
+      canCreateAgents: true
+      canApproveHires: true
+      canModifyBudgets: true
+
+  cto:
+    model: claude-sonnet-4-5
+    role: cto
+    reports_to: ceo
+    instructions: "You are the CTO. Break down goals into tasks, assign to engineers."
+    tools:
+      - create_task
+      - assign_task
+    budget_monthly_cents: 30000
+    context_mode: thin
+    permissions:
+      canCreateAgents: true
+      canCreateTasks: true
+
+  swe:
+    model: claude-sonnet-4-5
+    role: swe
+    reports_to: cto
+    adapter: codex
+    instructions: "You are a software engineer. Implement tasks assigned to you."
+    tools:
+      - read_file
+      - write_file
+      - run_tests
+    max_turns: 20
+    budget_monthly_cents: 20000
+    context_mode: fat
+
+  reviewer:
+    model: claude-sonnet-4-5
+    role: reviewer
+    reports_to: cto
+    instructions: "You review code changes and provide feedback."
+    tools:
+      - read_file
+      - comment
+    max_turns: 10
+    budget_monthly_cents: 10000
+    context_mode: thin
+
+pipeline:
+  name: default-pipeline
+  steps:
+    - id: plan
+      type: agent
+      config:
+        agent: cto
+        action: plan_tasks
+    - id: implement
+      type: agent
+      config:
+        agent: swe
+        action: implement
+    - id: review
+      type: agent
+      config:
+        agent: reviewer
+        action: review
+    - id: revise
+      type: loop
+      config:
+        max_iterations: 3
+        back_to: implement
+    - id: merge
+      type: agent
+      config:
+        agent: cto
+        action: merge
