@@ -11,6 +11,7 @@ import { billingRouter } from './routes/billing.js';
 import { pipelinesRouter } from './routes/pipelines.js';
 import { sseRouter } from './realtime/sse.js';
 import { DevRealtimeProvider } from './realtime/provider.js';
+import { githubRouter } from './github/index.js';
 
 export function createApp(db?: ReturnType<typeof createDb>) {
   const app = express();
@@ -30,6 +31,7 @@ export function createApp(db?: ReturnType<typeof createDb>) {
     app.use('/api/v1/secrets', secretsRouter(db));
     app.use('/api/v1/billing', billingRouter(db));
     app.use('/api/v1/pipelines', pipelinesRouter(db));
+    app.use('/api/v1/github', githubRouter(db));
   }
 
   const realtime = new DevRealtimeProvider();
